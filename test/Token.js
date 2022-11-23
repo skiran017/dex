@@ -11,7 +11,7 @@ describe('Token', () => {
   beforeEach(async () => {
     //get token from blockchain
     const Token = await ethers.getContractFactory('Token');
-    token = await Token.deploy('Spektr Token', 'SPKTR', 999999999);
+    token = await Token.deploy('Spektr Token', 'SPKTR', '999999999');
 
     accounts = await ethers.getSigners();
     deployer = accounts[0];
