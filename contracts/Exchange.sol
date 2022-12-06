@@ -10,14 +10,37 @@ contract Exchange {
 
     mapping(address => mapping(address => uint256)) public tokens;
 
-    event Deposit(address token, address user, uint256 amount, uint256 balance);
+    //Orders mapping
+    mapping(uint256 => _Order) public orders;
+    uint256 public orderCount;
 
+    event Deposit(address token, address user, uint256 amount, uint256 balance);
     event Withdraw(
         address token,
         address user,
         uint256 amount,
         uint256 balance
     );
+    event Order(
+        uint256 id,
+        address user,
+        address tokenGet,
+        uint256 amountGet,
+        address tokenGive,
+        uint256 amountGive,
+        uint256 timeStamp
+    );
+
+    //A way to model the order
+    struct _Order {
+        uint256 id;
+        address user;
+        address tokenGet;
+        uint256 amountGet;
+        address tokenGive;
+        uint256 amountGive;
+        uint256 timeStamp;
+    }
 
     constructor(address _feeAccount, uint256 _feePercent) {
         feeAccount = _feeAccount;
@@ -58,5 +81,39 @@ contract Exchange {
         returns (uint256)
     {
         return tokens[_token][_user];
+    }
+
+    //Make Orders
+    function makeOrder(
+        address _tokenGet,
+        uint256 _amountGet,
+        address _tokenGive,
+        uint256 _amountGive
+    ) public {
+        //Require token balance
+        require(balanceOf(_tokenGive, msg.sender) >= _amountGive);
+
+        //Create order
+        orderCount = orderCount + 1;
+        orders[orderCount] = _Order(
+            orderCount, // order id
+            msg.sender, // user '0x0..ab23'
+            _tokenGet, // token user gets
+            _amountGet, // amount user gets
+            _tokenGive, // token user gives
+            _amountGive, // amount user gives
+            block.timestamp // time when order was created
+        );
+
+        //Emit event
+        emit Order(
+            orderCount,
+            msg.sender,
+            _tokenGet,
+            _amountGet,
+            _tokenGive,
+            _amountGive,
+            block.timestamp
+        );
     }
 }
