@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
 import config from '../config.json';
@@ -11,6 +11,8 @@ import {
   loadExchange,
 } from '../store/interactions';
 
+import Navbar from './Navbar';
+
 function App() {
   const dispatch = useDispatch();
 
@@ -19,8 +21,15 @@ function App() {
     const provider = loadProvider(dispatch);
     const chainId = await loadNetwork(provider, dispatch);
 
-    //Fetch current account & balance from Metamask
-    const account = await loadAccount(provider, dispatch);
+    //Reload page when network changes
+    window.ethereum.on('chainChanged', () => {
+      window.location.reload();
+    });
+
+    //Fetch current account & balance from Metamask when account changes
+    window.ethereum.on('accountsChanged', () => {
+      loadAccount(provider, dispatch);
+    });
 
     //Load Token smart contract
     const DEX = config[chainId].DexToken;
@@ -42,7 +51,7 @@ function App() {
   }, []);
   return (
     <div>
-      {/* Navbar */}
+      <Navbar />
 
       <main className="exchange grid">
         <section className="exchange__section--left grid">
