@@ -57,7 +57,73 @@ const decorateOrder = (order, tokens) => {
   };
 };
 
-//OrderBook
+//All Filled Orders----------------------------
+export const filledOrderSelector = createSelector(
+  filledOrders,
+  tokens,
+  (orders, tokens) => {
+    if (!tokens[0] || !tokens[1]) {
+      return;
+    }
+
+    //Filter orders by selected tokens
+    orders = orders.filter(
+      (o) =>
+        o.tokenGet === tokens[0].address || o.tokenGet === tokens[1].address
+    );
+    orders = orders.filter(
+      (o) =>
+        o.tokenGive === tokens[0].address || o.tokenGive === tokens[1].address
+    );
+
+    //Sort orders by time ascending for price comparison
+    orders = orders.sort((a, b) => a.timeStamp - b.timeStamp);
+
+    //Decorate the orders
+    orders = decorateFilledOrders(orders, tokens);
+
+    //Sort orders by time descending for price comparison
+    orders = orders.sort((a, b) => b.timeStamp - a.timeStamp);
+
+    return orders;
+  }
+);
+
+const decorateFilledOrders = (orders, tokens) => {
+  //Track previous order to compare history
+  let previousOrder = orders[0];
+
+  return orders.map((order) => {
+    order = decorateOrder(order, tokens);
+    order = decorateFilledOrder(order, previousOrder);
+    previousOrder = order; //update the previous order once its decorated
+
+    return order;
+  });
+};
+
+const decorateFilledOrder = (order, previousOrder) => {
+  return {
+    ...order,
+    tokenPriceClass: tokenPriceClass(order.tokenPrice, order.id, previousOrder),
+  };
+};
+
+const tokenPriceClass = (tokenPrice, orderId, previousOrder) => {
+  //Show green price if only one order exists
+  if (previousOrder.id === orderId) {
+    return GREEN;
+  }
+
+  //Show gree price if order price is higher than the prev. order and vise versa
+  if (previousOrder.tokenPrice <= tokenPrice) {
+    return GREEN;
+  } else {
+    return RED;
+  }
+};
+
+//OrderBook------------------------------------
 export const orderBookSelector = createSelector(
   openOrders,
   tokens,
@@ -122,7 +188,7 @@ const decorateOrderBookOrder = (order, tokens) => {
   };
 };
 
-//Price Chart
+//Price Chart----------------------------------
 export const priceChartSelector = createSelector(
   filledOrders,
   tokens,
