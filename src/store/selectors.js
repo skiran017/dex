@@ -105,7 +105,9 @@ const decorateOrder = (order, tokens) => {
     token0Amount: ethers.utils.formatUnits(token0Amount, 'ether'),
     token1Amount: ethers.utils.formatUnits(token1Amount, 'ether'),
     tokenPrice,
-    formattedTimeStamp: moment.unix(order.timeStamp).format('h:mm:ssa d MMM D'),
+    formattedTimeStamp: moment
+      .unix(order.timeStamp)
+      .format('h:mm:ssa d MMM YY'),
   };
 };
 
@@ -173,6 +175,64 @@ const tokenPriceClass = (tokenPrice, orderId, previousOrder) => {
   } else {
     return RED;
   }
+};
+
+//My Filled Orders-----------------------------
+export const myFilledOrdersSelector = createSelector(
+  account,
+  tokens,
+  filledOrders,
+  (account, tokens, orders) => {
+    if (!tokens[0] || !tokens[1]) {
+      return;
+    }
+
+    //Filter orders created by current account
+    orders = orders.filter((o) => o.user === account || o.creator === account);
+
+    //Filter orders by token addresses
+    orders = orders.filter(
+      (o) =>
+        o.tokenGet === tokens[0].address || o.tokenGet === tokens[1].address
+    );
+    orders = orders.filter(
+      (o) =>
+        o.tokenGive === tokens[0].address || o.tokenGive === tokens[1].address
+    );
+
+    //Decorate orders- add display attributes
+    orders = decorateMyFilledOrders(orders, account, tokens);
+
+    //Sort orders by date descending
+    orders = orders.sort((a, b) => b.timeStamp - a.timeStamp);
+
+    return orders;
+  }
+);
+
+const decorateMyFilledOrders = (orders, account, tokens) => {
+  return orders.map((order) => {
+    order = decorateOrder(order, tokens);
+    order = decorateMyFilledOrder(order, account, tokens);
+    return order;
+  });
+};
+
+const decorateMyFilledOrder = (order, account, tokens) => {
+  const myOrder = order.creator === account;
+
+  let orderType;
+  if (myOrder) {
+    orderType = order.tokenGive === tokens[1].address ? 'buy' : 'sell';
+  } else {
+    orderType = order.tokenGive === tokens[1].address ? 'sell' : 'buy';
+  }
+  return {
+    ...order,
+    orderType,
+    orderTypeClass: orderType === 'buy' ? GREEN : RED,
+    orderSign: orderType === 'buy' ? '+' : '-',
+  };
 };
 
 //OrderBook------------------------------------
