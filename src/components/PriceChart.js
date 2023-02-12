@@ -18,7 +18,11 @@ function PriceChart() {
     <div className="component exchange__chart">
       <div className="component__header flex-between">
         <div className="flex">
-          <h2>{symbols && `${symbols[0]} / ${symbols[1]}`}</h2>
+          <h2>
+            {symbols.length
+              ? `${symbols[0]} / ${symbols[1]}`
+              : 'Select a valid network'}
+          </h2>
 
           {priceChart && (
             <div className="flex">
