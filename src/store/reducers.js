@@ -90,7 +90,6 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
         loaded: true,
         contract: action.exchange,
       };
-
     case 'CANCELLED_ORDERS_LOADED':
       return {
         ...state,
@@ -115,7 +114,7 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
           data: action.allOrders,
         },
       };
-
+    //-------------------------------
     case 'ORDER_CANCEL_REQUEST':
       return {
         ...state,
@@ -149,7 +148,7 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
           isError: true,
         },
       };
-
+    //-------------------------------
     case 'ORDER_FILL_REQUEST':
       return {
         ...state,
@@ -194,7 +193,7 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
           isError: true,
         },
       };
-
+    //-------------------------------
     case 'EXCHANGE_TOKEN_1_BALANCE_LOADED':
       return {
         ...state,
@@ -205,7 +204,7 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
         ...state,
         balances: [...state.balances, action.balance],
       };
-
+    //-------------------------------
     case 'TRANSFER_REQUEST':
       return {
         ...state,
@@ -238,7 +237,7 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
         },
         transferInProgress: false,
       };
-
+    //-------------------------------
     case 'NEW_ORDER_REQUEST':
       return {
         ...state,

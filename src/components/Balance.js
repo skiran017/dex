@@ -103,7 +103,7 @@ function Balance() {
     if (exchange && tokens[0] && tokens[1] && account) {
       loadBalances(exchange, tokens, account, dispatch);
     }
-  }, [exchange, tokens, account, transferInProgress]);
+  }, [exchange, tokens, account, transferInProgress, dispatch]);
 
   return (
     <div className="component exchange__transfers">

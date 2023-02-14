@@ -12,6 +12,7 @@ import {
   loadAllOrders,
   subscribeToEvents,
 } from '../store/interactions';
+import Alert from './Alert';
 
 import Balance from './Balance';
 import Markets from './Markets';
@@ -63,7 +64,7 @@ function App() {
 
   useEffect(() => {
     loadBlockchainData();
-  }, []);
+  });
   return (
     <div>
       <Navbar />
@@ -87,7 +88,7 @@ function App() {
         </section>
       </main>
 
-      {/* Alert */}
+      <Alert />
     </div>
   );
 }
