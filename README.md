@@ -8,7 +8,7 @@ Try running some of the following tasks:
 npx hardhat help
 npx hardhat test
 REPORT_GAS=true npx hardhat test
-npx hardhat node
 npx hardhat console --network localhost
+npx hardhat node
 npx hardhat run --network localhost scripts/1_deploy.js
 ```
